@@ -17,6 +17,12 @@ app.get("/", (req, res) => {
   res.send(html);
 });
 
+app.get("/profile", (req, res) => {
+  res.send(
+    `This is the profile page. You are authenticated, ${user.displayName}! <br> <img src="${user.photos[0].value}" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; bg-color: black; padding: 5px;">`,
+  );
+});
+
 passport.use(
   new GoogleStrategy(
     {
@@ -34,13 +40,15 @@ app.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] }),
 );
-
+let user;
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", { session: false, failureRedirect: "/" }),
   (req, res) => {
     console.log(req.user);
-    res.send("Google authentication successful");
+    user = req.user;
+    console.log("Google authentication successful");
+    res.redirect("/profile");
   },
 );
 
